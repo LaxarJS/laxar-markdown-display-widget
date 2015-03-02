@@ -1,0 +1,76 @@
+{
+   "name": "AxMarkdownDisplayWidget",
+   "description": "Obtains Markdown-formatted text or a reference to it from a resource and displays it as HTML.",
+   "version": {
+      "spec": "1.4"
+   },
+
+   "integration": {
+      "technology": "angular",
+      "type": "widget"
+   },
+
+   "compatibility": [ "json-patch" ],
+
+   "features": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "required": [ "markdown" ],
+      "properties": {
+         "markdown": {
+            "type": "object",
+            "description": "Tells how to obtain the Markdown-formatted text.",
+            "required": [ "parameter" ],
+            "properties": {
+               "parameter": {
+                  "type": "string",
+                  "description": "The place parameter for the flow definition to support anchors.",
+                  "format": "topic"
+               },
+               "resource": {
+                  "type": "string",
+                  "description": "The resource topic under which Markdown-formatted text is expected or a URL which references to a file with Markdown-formatted text.",
+                  "format": "topic"
+               },
+               "attribute": {
+                  "type": "string",
+                  "description": "Path to the actual Markdown-formatted text",
+                  "format": "topic"
+               },
+               "url": {
+                  "type": "string",
+                  "description": "The URL which refers to a Markdown-formatted text."
+               }
+            }
+         },
+         "messages": {
+            "type": "object",
+            "description": "Configuration of messages published via didEncounterError or didValidate events.",
+            "properties": {
+               "i18nFailedLoadingResource": {
+                  "type": [
+                     "object",
+                     "string"
+                  ],
+                  "description": "The message to publish when a GET for a Markdown-formatted text source fails. [url] is replaced by the URL.",
+                  "default": {
+                     "en_US": "Could not load resource from \"[url]\"",
+                     "de_DE": "Die Ressource konnte nicht von \"[url]\" geladen werden."
+                  }
+               }
+            }
+         },
+         "i18n": {
+            "description": "Which locale to use for displaying this widget.",
+            "type": "object",
+            "properties": {
+               "locale": {
+                  "type": "string",
+                  "description": "The topic under which to expect the locale for this widget.",
+                  "default": "default"
+               }
+            }
+         }
+      }
+   }
+}
