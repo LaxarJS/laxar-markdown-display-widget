@@ -1,9 +1,6 @@
 {
    "name": "AxMarkdownDisplayWidget",
    "description": "Obtains Markdown-formatted text or a reference to it from a resource and displays it as HTML.",
-   "version": {
-      "spec": "1.4"
-   },
 
    "integration": {
       "technology": "angular",
@@ -54,8 +51,8 @@
                   ],
                   "description": "The message to publish when a GET for a Markdown-formatted text source fails. [url] is replaced by the URL.",
                   "default": {
-                     "en_US": "Could not load resource from \"[url]\"",
-                     "de_DE": "Die Ressource konnte nicht von \"[url]\" geladen werden."
+                     "en": "Could not load resource from \"[url]\"",
+                     "de": "Die Ressource konnte nicht von \"[url]\" geladen werden."
                   }
                }
             }
