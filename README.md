@@ -6,7 +6,7 @@ The AxMarkdownDisplayWidget converts [Markdown]-formatted text to HTML content a
 * [Appearance](#appearance)
 * [Usage](#usage)
 * [Features](#features)
-* [Integration](#Integration)
+* [Integration](#integration)
 * [References](#references)
 
 ## Appearance
