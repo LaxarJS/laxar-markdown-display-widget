@@ -75,10 +75,10 @@ If no attribute is configured, the widget MUST expect a URL in the resource acco
 The widget supports the following event patterns as specified by the [LaxarJS Patterns] document.
 
 #### Resources
-* Resource: markdown.resource
-* Role: Slave
-* Access: Read
-* Description: Contains the Markdown-formatted text or a URL which refers to a Markdown-formatted text.
+* Resource: `markdown.resource`
+   * Role: Slave
+   * Access: Read
+   * Description: Contains the Markdown-formatted text or a URL which refers to a Markdown-formatted text.
 
 ## References
 The following resources are useful or necessary for the understanding of this document.
