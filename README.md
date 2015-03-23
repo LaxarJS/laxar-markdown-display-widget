@@ -19,6 +19,16 @@ An AxMarkdownDisplayWidget displaying a part of this document.
 ### Installation
 For installation instruction take a look at the [LaxarJS documentation](https://github.com/LaxarJS/laxar/blob/master/docs/manuals/installing_widgets.md).
 
+The AxMarkdownDisplayWidget requires the libraries *marked* and *URIjs*, as listed in the [bower.json](bower.json).
+The `baseUrl` of the RequireJS configuration (`require_config.js`) of the application must either be `bower_components` or the paths to the libraries must be specified in the configuration.
+
+For example if the `baseUrl` is `''` (application root) the following paths must be added to the configuration:
+```
+paths: {
+   marked: 'bower_components/marked',
+   URIjs: 'bower_components/URIjs'
+}
+```
 
 ### Configuration example
 ```json
@@ -33,6 +43,7 @@ For installation instruction take a look at the [LaxarJS documentation](https://
    }
 }
 ```
+
 Use this configuration on a page to get an AxMarkdownDisplayWidget instance.
 The value of `parameter` is used to generate internal anchors, and has to be the same as defined in the flow definition.
 For more information how to configure the flow and places with parameters visit the [LaxarJS flow] documentation.
@@ -83,7 +94,7 @@ The widget supports the following event patterns as specified by the [LaxarJS Pa
 ## References
 The following resources are useful or necessary for the understanding of this document.
 The links refer to the latest version of the documentation.
-Refer to the bower.json for the specific version that is normative for this document.
+Refer to the [bower.json](bower.json) for the specific version that is normative for this document.
 
 * [LaxarJS Concepts]
 * [LaxarJS Patterns]
