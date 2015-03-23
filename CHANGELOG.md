@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#7](https://github.com/LaxarJS/ax-markdown-display-widget/issues/7): Documentation: Explained RequireJS configuration
+
 
 ## v1.5.2
 
