@@ -193,13 +193,15 @@ define( [
 
             $httpBackend.flush();
             expect( testBed.scope.model.html )
-               .toMatch( '<h1[^>]*\\s+id="widget__testWidgetId_heading"[^>]*>' );
+               .toMatch( '<h1[^>]*\\s+id="' + testBed.scope.id( 'heading' ) + '"[^>]*>' );
             expect( testBed.scope.model.html )
-               .toMatch( '<h2[^>]*\\s+id="widget__testWidgetId_second-heading"[^>]*>' );
+               .toMatch( '<h2[^>]*\\s+id="' + testBed.scope.id( 'second-heading' ) + '"[^>]*>' );
             expect( testBed.scope.model.html )
-               .toMatch( '<h3[^>]*\\s+id="widget__testWidgetId_dritte-berschrift-stra-e"[^>]*>' );
+               .toMatch( '<h3[^>]*\\s+id="' + testBed.scope.id( 'dritte-berschrift-stra-e' ) + '"[^>]*>' );
+
+            var linkUrl = 'http://localhost:8000/index.html#/widgetBrowser/' + testBed.scope.id( 'second-heading' );
             expect( testBed.scope.model.html )
-               .toMatch( '<a[^>]*\\s+href="http://localhost:8000/index.html#/widgetBrowser/widget__testWidgetId_second-heading"[^>]*>Second Heading</a>' );
+               .toMatch( '<a[^>]*\\s+href="' + linkUrl + '"[^>]*>Second Heading</a>' );
          } );
 
       } );
@@ -302,14 +304,18 @@ define( [
             };
 
             jasmine.Clock.tick( 0 );
+
+
             expect( testBed.scope.model.html )
-               .toMatch( '<h1[^>]*\\s+id="widget__testWidgetId_heading"[^>]*>' );
+               .toMatch( '<h1[^>]*\\s+id="' + testBed.scope.id( 'heading' ) + '"[^>]*>' );
             expect( testBed.scope.model.html )
-               .toMatch( '<h2[^>]*\\s+id="widget__testWidgetId_second-heading"[^>]*>' );
+               .toMatch( '<h2[^>]*\\s+id="' + testBed.scope.id( 'second-heading' ) + '"[^>]*>' );
             expect( testBed.scope.model.html )
-               .toMatch( '<h3[^>]*\\s+id="widget__testWidgetId_dritte-berschrift-stra-e"[^>]*>' );
+               .toMatch( '<h3[^>]*\\s+id="' + testBed.scope.id( 'dritte-berschrift-stra-e' ) + '"[^>]*>' );
+
+            var linkUrl = 'http://localhost:8000/index.html#/widgetBrowser/' + testBed.scope.id( 'second-heading' );
             expect( testBed.scope.model.html )
-               .toMatch( '<a[^>]*\\s+href="http://localhost:8000/index.html#/widgetBrowser/widget__testWidgetId_second-heading"[^>]*>Second Heading</a>' );
+               .toMatch( '<a[^>]*\\s+href="' + linkUrl + '"[^>]*>Second Heading</a>' );
          } );
 
       } );
@@ -485,13 +491,15 @@ define( [
 
             $httpBackend.flush();
             expect( testBed.scope.model.html )
-               .toMatch( '<h1[^>]*\\s+id="widget__testWidgetId_heading"[^>]*>' );
+               .toMatch( '<h1[^>]*\\s+id="' + testBed.scope.id( 'heading' ) + '"[^>]*>' );
             expect( testBed.scope.model.html )
-               .toMatch( '<h2[^>]*\\s+id="widget__testWidgetId_second-heading"[^>]*>' );
+               .toMatch( '<h2[^>]*\\s+id="' + testBed.scope.id( 'second-heading' ) + '"[^>]*>' );
             expect( testBed.scope.model.html )
-               .toMatch( '<h3[^>]*\\s+id="widget__testWidgetId_dritte-berschrift-stra-e"[^>]*>' );
+               .toMatch( '<h3[^>]*\\s+id="' + testBed.scope.id( 'dritte-berschrift-stra-e' ) + '"[^>]*>' );
+
+            var linkUrl = 'http://localhost:8000/index.html#/widgetBrowser/' + testBed.scope.id( 'second-heading' );
             expect( testBed.scope.model.html )
-               .toMatch( '<a[^>]*\\s+href="http://localhost:8000/index.html#/widgetBrowser/widget__testWidgetId_second-heading"[^>]*>Second Heading</a>' );
+               .toMatch( '<a[^>]*\\s+href="' + linkUrl + '"[^>]*>Second Heading</a>' );
          } );
 
       } );
