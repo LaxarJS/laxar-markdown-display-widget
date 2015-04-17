@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v1.6.0
+
 - [#8](https://github.com/LaxarJS/ax-markdown-display-widget/issues/8): spec: adapted to change in widget ID generation (LaxarJS/laxar#175)
 - [#7](https://github.com/LaxarJS/ax-markdown-display-widget/issues/7): Documentation: Explained RequireJS configuration
 - [#6](https://github.com/LaxarJS/ax-markdown-display-widget/issues/6): Documentation: Fixed layout in section "Integration"
@@ -13,4 +16,3 @@
 ## v1.5.0
 
 Initial OSS version.
-
