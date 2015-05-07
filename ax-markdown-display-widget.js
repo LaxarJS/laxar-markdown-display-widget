@@ -74,23 +74,28 @@ define( [
 
       function loadMarkdown() {
          $scope.model.html = '';
-         if( $scope.features.markdown.attribute && $scope.resources.markdown ) {
-            var markdown = ax.object.path( $scope.resources.markdown, $scope.features.markdown.attribute );
-            if( markdown && typeof( markdown ) === 'string' ) {
-               $scope.model.html =  markdownToHtml( markdown );
+         if( $scope.resources.markdown ) {
+            if( $scope.features.markdown.attribute ) {
+               var markdown = ax.object.path( $scope.resources.markdown, $scope.features.markdown.attribute );
+               if( typeof( markdown ) === 'string' ) {
+                  $scope.model.html =  markdownToHtml( markdown );
+               }
+               else {
+                  ax.log.warn( 'No markdown content available' );
+               }
             }
             else {
-               ax.log.warn( 'No markdown content available' );
+               var location =  ax.object.path( $scope.resources.markdown, '_links.markdown.href', null );
+               if( location ) {
+                  loadMarkdownFromUrl( location );
+               }
+               else {
+                  ax.log.warn( 'No content URL available' );
+               }
             }
          }
-         else {
-            var location = markdownUrl();
-            if( location && typeof( location ) === 'string' ) {
-               loadMarkdownFromUrl( location );
-            }
-            else {
-               ax.log.warn( 'No content url available' );
-            }
+         else if( $scope.features.markdown.url ) {
+            loadMarkdownFromUrl( $scope.features.markdown.url );
          }
       }
 

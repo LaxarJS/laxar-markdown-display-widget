@@ -21,8 +21,7 @@
             "properties": {
                "parameter": {
                   "type": "string",
-                  "description": "The place parameter for the flow definition to support anchors.",
-                  "format": "topic"
+                  "description": "The place parameter for the flow definition to support anchors."
                },
                "resource": {
                   "type": "string",
@@ -31,8 +30,7 @@
                },
                "attribute": {
                   "type": "string",
-                  "description": "Path to the actual Markdown-formatted text",
-                  "format": "topic"
+                  "description": "Path to the actual Markdown-formatted text"
                },
                "url": {
                   "type": "string",
@@ -64,7 +62,8 @@
                "locale": {
                   "type": "string",
                   "description": "The topic under which to expect the locale for this widget.",
-                  "default": "default"
+                  "default": "default",
+                  "format": "topic"
                }
             }
          }
