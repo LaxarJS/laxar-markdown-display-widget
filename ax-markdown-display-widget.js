@@ -76,7 +76,7 @@ define( [
          $scope.model.html = '';
          if( $scope.features.markdown.attribute && $scope.resources.markdown ) {
             var markdown = ax.object.path( $scope.resources.markdown, $scope.features.markdown.attribute );
-            if( markdown && typeof( markdown ) === 'string' ) {
+            if( typeof( markdown ) === 'string' ) {
                $scope.model.html =  markdownToHtml( markdown );
             }
             else {
@@ -88,8 +88,8 @@ define( [
             if( location && typeof( location ) === 'string' ) {
                loadMarkdownFromUrl( location );
             }
-            else {
-               ax.log.warn( 'No content url available' );
+            else if( !$scope.features.markdown.attribute && $scope.resources.markdown ) {
+               ax.log.warn( 'No content URL available' );
             }
          }
       }
