@@ -259,7 +259,7 @@ define( [
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-         it( 'logs a warning if we don\'t have a string as markdown (R1.5)', function() {
+         it( 'logs a warning if we do not have a string as markdown (R1.5)', function() {
             testBed.eventBusMock.publish( 'didReplace.markdownResource', {
                resource: 'markdownResource',
                data: {
@@ -273,7 +273,7 @@ define( [
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-         it( 'logs a warning if we don\'t have the specified attribute (R1.5)', function() {
+         it( 'logs a warning if we do not have the specified attribute (R1.5)', function() {
             testBed.eventBusMock.publish( 'didReplace.markdownResource', {
                resource: 'markdownResource',
                data: {
@@ -287,9 +287,8 @@ define( [
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-         it( 'doesn\'t log a warning before the resource isn\'t received', function() {
+         it( 'does not log a warning before the resource is received', function() {
             expect( ax.log.warn ).not.toHaveBeenCalled();
-            jasmine.Clock.tick( 0 );
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -401,26 +400,7 @@ define( [
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-         it( 'logs a warning if we don\'t have a string as URL (R1.5)', function() {
-            testBed.setup();
-            testBed.eventBusMock.publish( 'didReplace.markdownResource', {
-               resource: 'markdownResource',
-               data: {
-                  _links: {
-                     markdown: {
-                        href: []
-                     }
-                  }
-               }
-            } );
-
-            jasmine.Clock.tick( 0 );
-            expect( ax.log.warn ).toHaveBeenCalled();
-         } );
-
-         /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-         it( 'logs a warning if we don\'t have a URL (R1.5)', function() {
+         it( 'logs a warning if we do not have a URL (R1.5)', function() {
             testBed.setup();
             testBed.eventBusMock.publish( 'didReplace.markdownResource', {
                resource: 'markdownResource',
@@ -433,7 +413,7 @@ define( [
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-         it( 'doesn\'t log a warning if the resource is null', function() {
+         it( 'does not log a warning if the resource is null', function() {
             testBed.setup();
             testBed.eventBusMock.publish( 'didReplace.markdownResource', {
                resource: 'markdownResource',
