@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#9](https://github.com/LaxarJS/ax-markdown-display-widget/issues/9): fixed log warnings
+
 
 ## v1.6.0
 
