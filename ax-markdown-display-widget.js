@@ -97,7 +97,6 @@ define( [
          else if( $scope.features.markdown.url ) {
             loadMarkdownFromUrl( $scope.features.markdown.url );
          }
-
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////
