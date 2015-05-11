@@ -135,7 +135,11 @@ define( [
             return defaultRenderer.image( href, title, text );
          }
          else {
-            return defaultRenderer.image( uri.unicode().absoluteTo( markdownUrl() ), title, text );
+            var markdownSourceUrl = markdownUrl();
+            if( !markdownSourceUrl ) {
+               return defaultRenderer.image( uri.unicode(), title, text );
+            }
+            return defaultRenderer.image( uri.unicode().absoluteTo( markdownSourceUrl ), title, text );
          }
       }
 
@@ -154,7 +158,11 @@ define( [
                return '<a href="' + anchorHref + '">' + text + '</a>';
             }
             else {
-               return defaultRenderer.link( uri.unicode().absoluteTo( markdownUrl() ), title, text );
+               var markdownSourceUrl = markdownUrl();
+               if( !markdownSourceUrl ) {
+                  return defaultRenderer.link( uri.unicode(), title, text );
+               }
+               return defaultRenderer.link( uri.unicode().absoluteTo( markdownSourceUrl ), title, text );
             }
          }
       }
@@ -189,6 +197,7 @@ define( [
             } );
 
             function scrollToAnchor( id ) {
+               if( !id ) { return; }
                var offset = $( '#' + id ).offset();
                if( offset ) {
                   window.scrollTo( offset.left, offset.top );
