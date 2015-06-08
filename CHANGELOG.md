@@ -2,12 +2,15 @@
 
 ## Last Changes
 
+- [#12](https://github.com/LaxarJS/ax-markdown-display-widget/issues/12): Fixed missing hint for last changelog
+
 
 ## v2.0.0
 
 - [#11](https://github.com/LaxarJS/ax-markdown-display-widget/issues/11): Updated LaxarJS dependencies and updated contribution information
+  + **BREAKING CHANGE:** see ticket for details
 - [#10](https://github.com/LaxarJS/ax-markdown-display-widget/issues/10): Fixed invalid url for URI.js
-- [#9](https://github.com/LaxarJS/ax-markdown-display-widget/issues/9): Ffixed log warnings
+- [#9](https://github.com/LaxarJS/ax-markdown-display-widget/issues/9): Fixed log warnings
 
 
 ## v1.6.0
