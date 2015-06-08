@@ -14,6 +14,7 @@
       "type": "object",
       "required": [ "markdown" ],
       "properties": {
+
          "markdown": {
             "type": "object",
             "description": "Tells how to obtain the Markdown-formatted text.",
@@ -38,6 +39,7 @@
                }
             }
          },
+
          "messages": {
             "type": "object",
             "description": "Configuration of messages published via didEncounterError or didValidate events.",
@@ -55,6 +57,7 @@
                }
             }
          },
+
          "i18n": {
             "description": "Which locale to use for displaying this widget.",
             "type": "object",

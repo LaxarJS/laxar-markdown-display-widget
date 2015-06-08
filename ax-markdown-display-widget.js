@@ -7,7 +7,7 @@ define( [
    'angular',
    'jquery',
    'laxar',
-   'laxar_patterns',
+   'laxar-patterns',
    'marked/lib/marked',
    'URIjs/src/URI'
 ], function( ng, $, ax, patterns, marked, URI ) {
