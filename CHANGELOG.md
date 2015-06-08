@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+## v2.0.1
+
 - [#12](https://github.com/LaxarJS/ax-markdown-display-widget/issues/12): Fixed missing hint for last changelog
 
 
