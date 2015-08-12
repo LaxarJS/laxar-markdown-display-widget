@@ -1,4 +1,4 @@
-# AxMarkdownDisplayWidget
+# AxMarkdownDisplayWidget [![Build Status](https://travis-ci.org/LaxarJS/ax-markdown-display-widget.svg?branch=master)](https://travis-ci.org/LaxarJS/ax-markdown-display-widget)
 The AxMarkdownDisplayWidget converts [Markdown]-formatted text to HTML content and displays it.
 
 
