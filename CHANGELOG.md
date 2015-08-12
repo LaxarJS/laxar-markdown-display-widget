@@ -2,6 +2,7 @@
 
 ## Last Changes
 
+- [#14](https://github.com/LaxarJS/ax-markdown-display-widget/issues/14): Added a `.travis.yml` for open continuous integration
 - [#12](https://github.com/LaxarJS/ax-markdown-display-widget/issues/12): Fixed missing hint for last changelog
 
 
