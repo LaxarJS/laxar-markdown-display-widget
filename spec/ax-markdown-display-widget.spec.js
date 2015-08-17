@@ -4,13 +4,14 @@
  * http://laxarjs.org/license
  */
 define( [
+   'json!../widget.json',
    '../ax-markdown-display-widget',
    'angular-mocks',
    'laxar/laxar_testing'
-], function( widgetModule, ngMocks, ax ) {
+], function( descriptor, widgetModule, ngMocks, ax ) {
    'use strict';
 
-   describe( 'An AxMarkdownDisplayWidget', function() {
+   describe( 'An ax-markdown-display-widget', function() {
 
       var testBed;
       var $httpBackend;
@@ -18,7 +19,7 @@ define( [
       var MARKDOWN_DISPLAY_SCROLL = 'markdownDisplayScroll';
 
       beforeEach( function() {
-         testBed = ax.testing.portalMocksAngular.createControllerTestBed( 'laxarjs/ax-markdown-display-widget' );
+         testBed = ax.testing.portalMocksAngular.createControllerTestBed( descriptor );
          spyOn( ax.log, 'warn' );
          testBed.injections = {
             $sce: {

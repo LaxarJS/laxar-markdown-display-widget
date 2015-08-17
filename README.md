@@ -1,5 +1,5 @@
-# AxMarkdownDisplayWidget [![Build Status](https://travis-ci.org/LaxarJS/ax-markdown-display-widget.svg?branch=master)](https://travis-ci.org/LaxarJS/ax-markdown-display-widget)
-The AxMarkdownDisplayWidget converts [Markdown]-formatted text to HTML content and displays it.
+# ax-markdown-display-widget [![Build Status](https://travis-ci.org/LaxarJS/ax-markdown-display-widget.svg?branch=master)](https://travis-ci.org/LaxarJS/ax-markdown-display-widget)
+The ax-markdown-display-widget converts [Markdown]-formatted text to HTML content and displays it.
 
 
 ## Content
@@ -10,16 +10,16 @@ The AxMarkdownDisplayWidget converts [Markdown]-formatted text to HTML content a
 * [References](#references)
 
 ## Appearance
-![Illustration of the AxMarkdownDisplayWidget](docs/img/example.png)
+![Illustration of the ax-markdown-display-widget](docs/img/example.png)
 
-An AxMarkdownDisplayWidget displaying a part of this document.
+An ax-markdown-display-widget displaying a part of this document.
 
 ## Usage
 
 ### Installation
 For installation instruction take a look at the [LaxarJS documentation](https://github.com/LaxarJS/laxar/blob/master/docs/manuals/installing_widgets.md).
 
-The AxMarkdownDisplayWidget requires the libraries *marked* and *URIjs*, as listed in the [bower.json](bower.json).
+The ax-markdown-display-widget requires the libraries *marked* and *URIjs*, as listed in the [bower.json](bower.json).
 The `baseUrl` of the RequireJS configuration (`require_config.js`) of the application must either be `bower_components` or the paths to the libraries must be specified in the configuration.
 
 For example if the `baseUrl` is `''` (application root) the following paths must be added to the configuration:
@@ -44,7 +44,7 @@ paths: {
 }
 ```
 
-Use this configuration on a page to get an AxMarkdownDisplayWidget instance.
+Use this configuration on a page to get an ax-markdown-display-widget instance.
 The value of `parameter` is used to generate internal anchors, and has to be the same as defined in the flow definition.
 For more information how to configure the flow and places with parameters visit the [LaxarJS flow] documentation.
 
