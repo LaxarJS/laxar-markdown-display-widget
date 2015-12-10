@@ -26,6 +26,8 @@
                },
                "resource": {
                   "type": "string",
+                  "format": "topic",
+                  "axRole": "inlet",
                   "description": "The resource topic under which Markdown-formatted text is expected or a URL which references to a file with Markdown-formatted text.",
                   "format": "topic"
                },
@@ -64,9 +66,10 @@
             "properties": {
                "locale": {
                   "type": "string",
+                  "format": "topic",
+                  "axRole": "inlet",
                   "description": "The topic under which to expect the locale for this widget.",
-                  "default": "default",
-                  "format": "topic"
+                  "default": "default"
                }
             }
          }
