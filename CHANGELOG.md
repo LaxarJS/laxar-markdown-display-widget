@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v2.2.0
+
 - [#16](https://github.com/LaxarJS/ax-markdown-display-widget/issues/16): Expanded the widget definition
 
 
