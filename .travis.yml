@@ -4,10 +4,11 @@ node_js:
    - "0.12"
 env:
    matrix:
-      # Support the latest 1.0.x and 1.1.x versions
-      # GRUNT_LAXAR_VERSION=^0.8.0 LAXAR_VERSION=LaxarJS/laxar#^0.26.0
-      - GRUNT_LAXAR_VERSION=~1.0.0-0 LAXAR_VERSION=~1.0.0
-      - GRUNT_LAXAR_VERSION=~1.1.0-0 LAXAR_VERSION=~1.1.0
+      # Support the laxar 1.2.0-alpha.2 version
+      - GRUNT_LAXAR_VERSION=~1.1.2-0
+        LAXAR_VERSION=~1.2.0-alpha.2
+        LAXAR_UIKIT_VERSION=~1.1.0
+        LAXAR_PATTERNS_VERSION=~1.2.0-alpha.2
 before_install:
    - echo "{}" > "package.json"
    - export PATH="$PATH:$(npm bin)"
