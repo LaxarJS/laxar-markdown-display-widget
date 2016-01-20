@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v2.3.0
+
 - [#17](https://github.com/LaxarJS/ax-markdown-display-widget/issues/17): Use laxar-mocks instead of laxar-testing now
 
 
