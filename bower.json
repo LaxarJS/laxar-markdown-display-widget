@@ -7,8 +7,8 @@
       "url": "https://github.com/LaxarJS/ax-markdown-display-widget.git"
    },
    "dependencies": {
-      "laxar": "~1.2.0-alpha.2",
-      "laxar-patterns": "~1.2.0-alpha.2",
+      "laxar": "~1.2.0",
+      "laxar-patterns": "~1.2.0",
       "laxar-uikit": "~1.1.0",
 
       "jquery": "jquery/jquery#^1.11.x",
@@ -16,6 +16,6 @@
       "URIjs": "medialize/URI.js#^1.14.1"
    },
    "devDependencies": {
-      "laxar-mocks": "1.0.0-alpha.1"
+      "laxar-mocks": "1.0.0"
    }
 }
