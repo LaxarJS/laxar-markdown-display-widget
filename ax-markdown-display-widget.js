@@ -8,8 +8,8 @@ define( [
    'jquery',
    'laxar',
    'laxar-patterns',
-   'marked/lib/marked',
-   'URIjs/src/URI'
+   'marked',
+   'urijs'
 ], function( ng, $, ax, patterns, marked, URI ) {
    'use strict';
 

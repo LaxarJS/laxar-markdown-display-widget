@@ -1,0 +1,15 @@
+{
+   "name": "ax-markdown-display-widget",
+   "version": "3.0.0-pre",
+   "license": "MIT",
+   "repository": {
+      "type": "https",
+      "url": "https://github.com/LaxarJS/ax-markdown-display-widget.git"
+   },
+   "main": "ax-markdown-display-widget.js",
+   "dependencies": {
+      "jquery": "^1.11.x",
+      "marked": "^0.3.x",
+      "urijs": "^1.14.1"
+   }
+}
