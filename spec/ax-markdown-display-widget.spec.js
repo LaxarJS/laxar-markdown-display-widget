@@ -14,6 +14,7 @@ define( [
 
    describe( 'An ax-markdown-display-widget', function() {
       var widgetEventBus;
+      var widgetLog;
       var widgetScope;
       var testEventBus;
       var MARKDOWN_DISPLAY_SCROLL = 'markdownDisplayScroll';
@@ -40,19 +41,17 @@ define( [
                $injector.get( '$sce' ).trustAsHtml = function( html ) { return html; };
             } ] );
 
-            ng.mock.inject( [ 'axFlowService', function( axFlowService ) {
-               axFlowService.constructAbsoluteUrl = function( place, optionalParameters ) {
-                  return 'http://localhost:8000/index.html#/widgetBrowser/' +
-                     optionalParameters[ widgetScope.features.markdown.parameter ];
-               };
-            } ] );
+            axMocks.widget.axFlowService.constructAbsoluteUrl = function( place, optionalParameters ) {
+               return 'http://localhost:8000/index.html#/widgetBrowser/' +
+                  optionalParameters[ widgetScope.features.markdown.parameter ];
+            };
          } );
 
          beforeEach( function() {
-            widgetScope = axMocks.widget.$scope;
             widgetEventBus = axMocks.widget.axEventBus;
+            widgetLog = axMocks.widget.axLog;
+            widgetScope = axMocks.widget.$scope;
             testEventBus = axMocks.eventBus;
-            spyOn( ax.log, 'warn' );
          } );
       }
 
@@ -267,7 +266,7 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).toHaveBeenCalled();
+            expect( widgetLog.warn ).toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -281,13 +280,13 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).toHaveBeenCalled();
+            expect( widgetLog.warn ).toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
          it( 'does not log a warning before the resource is received', function() {
-            expect( ax.log.warn ).not.toHaveBeenCalled();
+            expect( widgetLog.warn ).not.toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -370,7 +369,7 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).toHaveBeenCalled();
+            expect( widgetLog.warn ).toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -382,7 +381,7 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).not.toHaveBeenCalled();
+            expect( widgetLog.warn ).not.toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
