@@ -8,8 +8,8 @@ define( [
    'jquery',
    'laxar',
    'laxar-patterns',
-   'marked/lib/marked',
-   'URIjs/src/URI'
+   'marked',
+   'urijs'
 ], function( ng, $, ax, patterns, marked, URI ) {
    'use strict';
 
@@ -103,16 +103,16 @@ define( [
 
       function loadMarkdownFromUrl( location ) {
          $http.get( location )
-            .success( function( data ) {
+            .then( function( response ) {
+               var data = response.data;
                $scope.model.html =  markdownToHtml( data );
-            } )
-            .error( function( data, status, headers ) {
+            }, function( response ) {
                publishError( 'HTTP_GET', 'i18nFailedLoadingResource', {
                   url: location
                }, {
-                  data: data,
-                  status: status,
-                  headers: headers
+                  data: response.data,
+                  status: response.status,
+                  headers: response.headers
                } );
             } );
       }

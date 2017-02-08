@@ -4,21 +4,21 @@
  * http://laxarjs.org/license
  */
 define( [
-   'json!../widget.json',
+   'json-loader!../widget.json',
    'laxar-mocks',
    'angular-mocks',
+   'angular',
    'laxar'
-], function( descriptor, axMocks, ngMocks, ax ) {
+], function( descriptor, axMocks, ngMocks, ng, ax ) {
    'use strict';
 
    describe( 'An ax-markdown-display-widget', function() {
       var widgetEventBus;
+      var widgetLog;
       var widgetScope;
       var testEventBus;
       var MARKDOWN_DISPLAY_SCROLL = 'markdownDisplayScroll';
       var $httpBackend;
-      var $sce;
-      var flowService;
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,26 +35,23 @@ define( [
          beforeEach( axMocks.widget.load );
 
          beforeEach( function() {
-            ngMocks.inject( function( $injector ) {
+            ng.mock.inject( [ '$injector', function( $injector ) {
                $httpBackend = $injector.get( '$httpBackend' );
-               $sce = $injector.get( '$sce' );
-            } );
-            $sce.trustAsHtml =  function( html ) { return html; };
 
-            ngMocks.inject( function( axFlowService ) {
-               flowService = axFlowService;
-            } );
-            flowService.constructAbsoluteUrl = function( place, optionalParameters ) {
-                        return 'http://localhost:8000/index.html#/widgetBrowser/' +
-                               optionalParameters[ widgetScope.features.markdown.parameter ];
+               $injector.get( '$sce' ).trustAsHtml = function( html ) { return html; };
+            } ] );
+
+            axMocks.widget.axFlowService.constructAbsoluteUrl = function( place, optionalParameters ) {
+               return 'http://localhost:8000/index.html#/widgetBrowser/' +
+                  optionalParameters[ widgetScope.features.markdown.parameter ];
             };
          } );
 
          beforeEach( function() {
-            widgetScope = axMocks.widget.$scope;
             widgetEventBus = axMocks.widget.axEventBus;
+            widgetLog = axMocks.widget.axLog;
+            widgetScope = axMocks.widget.$scope;
             testEventBus = axMocks.eventBus;
-            spyOn( ax.log, 'warn' );
          } );
       }
 
@@ -269,7 +266,7 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).toHaveBeenCalled();
+            expect( widgetLog.warn ).toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -283,13 +280,13 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).toHaveBeenCalled();
+            expect( widgetLog.warn ).toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
          it( 'does not log a warning before the resource is received', function() {
-            expect( ax.log.warn ).not.toHaveBeenCalled();
+            expect( widgetLog.warn ).not.toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -372,7 +369,7 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).toHaveBeenCalled();
+            expect( widgetLog.warn ).toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -384,7 +381,7 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).not.toHaveBeenCalled();
+            expect( widgetLog.warn ).not.toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
