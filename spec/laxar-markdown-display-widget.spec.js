@@ -4,11 +4,11 @@
  * http://laxarjs.org/license
  */
 define( [
-   'json!../widget.json',
+   'laxar',
    'laxar-mocks',
+   'angular',
    'angular-mocks',
-   'laxar'
-], function( descriptor, axMocks, ngMocks, ax ) {
+], function( ax, axMocks, ng ) {
    'use strict';
 
    describe( 'An ax-markdown-display-widget', function() {
@@ -19,43 +19,66 @@ define( [
       var $httpBackend;
       var $sce;
       var flowService;
+      var log;
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       function createSetup( widgetConfiguration ) {
 
-         beforeEach( axMocks.createSetupForWidget( descriptor, {
+         beforeEach( axMocks.setupForWidget( {
             knownMissingResources: [ 'ax-button-list-control.css' ]
          } ) );
 
          beforeEach( function() {
             axMocks.widget.configure( widgetConfiguration );
-         } );
 
-         beforeEach( axMocks.widget.load );
+            $httpBackend = null;
 
-         beforeEach( function() {
-            ngMocks.inject( function( $injector ) {
-               $httpBackend = $injector.get( '$httpBackend' );
-               $sce = $injector.get( '$sce' );
+            axMocks.widget.whenServicesAvailable( function() {
+               ng.mock.inject( function( _$httpBackend_, _$sce_ ) {
+                  $httpBackend = _$httpBackend_;
+
+                  $httpBackend.resetExpectations();
+                  $sce = _$sce_;
+                  $sce.trustAsHtml =  function( html ) { return html; };
+               } );
+
+               widgetScope = axMocks.widget.$scope;
+               widgetEventBus = axMocks.widget.axEventBus;
+               testEventBus = axMocks.eventBus;
+               flowService = axMocks.widget.axFlowService;
+               log = axMocks.widget.axLog;
+
+               flowService.constructAbsoluteUrl = function( place, optionalParameters ) {
+                  return 'http://localhost:8000/index.html#/widgetBrowser/' +
+                     optionalParameters[ widgetScope.features.markdown.parameter ];
+               };
             } );
-            $sce.trustAsHtml =  function( html ) { return html; };
-
-            ngMocks.inject( function( axFlowService ) {
-               flowService = axFlowService;
-            } );
-            flowService.constructAbsoluteUrl = function( place, optionalParameters ) {
-                        return 'http://localhost:8000/index.html#/widgetBrowser/' +
-                               optionalParameters[ widgetScope.features.markdown.parameter ];
-            };
          } );
+      }
 
-         beforeEach( function() {
-            widgetScope = axMocks.widget.$scope;
-            widgetEventBus = axMocks.widget.axEventBus;
-            testEventBus = axMocks.eventBus;
-            spyOn( ax.log, 'warn' );
-         } );
+      function expectRequest( url ) {
+         var respondArgs = Array.prototype.slice.call( arguments, 1 );
+
+         function callback() {
+            var expectedRequest = $httpBackend.expectGET( url );
+            if( respondArgs.length ) {
+               expectedRequest.respond.apply( expectedRequest, respondArgs );
+            }
+         }
+
+         return function() {
+            if( $httpBackend ) {
+               callback();
+            }
+            else {
+               axMocks.widget.whenServicesAvailable( callback );
+            }
+         }
+      }
+
+      function flushRequests() {
+         $httpBackend.flush();
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +86,6 @@ define( [
       afterEach( function() {
          $httpBackend.verifyNoOutstandingExpectation();
          $httpBackend.verifyNoOutstandingRequest();
-         axMocks.tearDown();
       } );
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,6 +99,8 @@ define( [
                attribute: 'markdown'
             }
          } );
+
+         beforeEach( axMocks.widget.load );
 
          beforeEach( function() {
             spyOn( widgetScope, '$emit' );
@@ -94,6 +118,8 @@ define( [
             } );
             testEventBus.flush();
          } );
+
+         afterEach( axMocks.tearDown );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -117,19 +143,34 @@ define( [
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
 
-            it( 'reads the file referenced by the URL via HTTP GET (R1.2)', function() {
-               $httpBackend.expectGET( 'test.md' ).respond( 200, 'markdown text' );
-               $httpBackend.flush();
-               expect( widgetScope.model.html ).toMatch( 'markdown text' );
+            describe( 'if the file contains plain text', function() {
+
+               beforeEach( expectRequest( 'test.md', 200, 'markdown text' ) );
+
+               beforeEach( axMocks.widget.load );
+
+               beforeEach( flushRequests );
+
+               afterEach( axMocks.tearDown );
+
+               it( 'reads the file referenced by the URL via HTTP GET (R1.2)', function() {
+                  expect( widgetScope.model.html ).toMatch( 'markdown text' );
+               } );
             } );
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
 
             describe( 'if the file is not found', function() {
 
+               beforeEach( expectRequest( 'test.md', 404, { value: 'Not Found' } ) );
+
+               beforeEach( axMocks.widget.load );
+
+               beforeEach( flushRequests );
+
+               afterEach( axMocks.tearDown );
+
                it( 'publishes an error message', function() {
-                  $httpBackend.expectGET( 'test.md' ).respond( 404, {value: 'Not Found'} );
-                  $httpBackend.flush();
                   expect( widgetEventBus.publish ).toHaveBeenCalledWith(
                      'didEncounterError.HTTP_GET',
                      jasmine.any( Object ),
@@ -140,10 +181,19 @@ define( [
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
 
-            it( 'converts the markdown file content to HTML (R1.6)', function() {
-               $httpBackend.expectGET( 'test.md' ).respond( 200, '*Emphasized*' );
-               $httpBackend.flush();
-               expect( widgetScope.model.html ).toMatch( /<em>Emphasized<\/em>/ );
+            describe( 'if the file contains markdown markup', function() {
+
+               beforeEach( expectRequest( 'test.md', 200, '*Emphasized*' ) );
+
+               beforeEach( axMocks.widget.load );
+
+               beforeEach( flushRequests );
+
+               afterEach( axMocks.tearDown );
+
+               it( 'converts the markdown file content to HTML (R1.6)', function() {
+                  expect( widgetScope.model.html ).toMatch( /<em>Emphasized<\/em>/ );
+               } );
             } );
 
          } );
@@ -159,9 +209,11 @@ define( [
                }
             } );
 
+            afterEach( axMocks.tearDown );
+
             //////////////////////////////////////////////////////////////////////////////////////////////////
 
-            it( 'resolves images with relative paths (R1.7)', function() {
+            it( 'resolves images with relative paths (R1.7)', function( done ) {
                var mdText = '';
                mdText += '![Image 1](http://my.example.org/docs/images/image1.png)';
                mdText += '![Image 2](//my.example.org/docs/images/image2.png)';
@@ -170,21 +222,31 @@ define( [
                mdText += '![Image 5](docs/images/image5.png)';
                mdText += '![Image 6](./docs/images/image6.png)';
                mdText += '![Image 7](../docs/images/image7.png)';
-               $httpBackend.expectGET( 'http://laxarjs.org/A/B/test.md' ).respond( 200, mdText );
 
-               $httpBackend.flush();
-               expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="http://my.example.org/docs/images/image1.png"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="//my.example.org/docs/images/image2.png"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="file:///docs/images/image3.png"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="http://laxarjs.org/docs/images/image4.png"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="http://laxarjs.org/A/B/docs/images/image5.png"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="http://laxarjs.org/A/B/docs/images/image6.png"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="http://laxarjs.org/A/docs/images/image7.png"[^>]*>|<img[^>]*\\s+src="http://laxarjs.org/A/B/../docs/images/image7.png"[^>]*>' );
+               expectRequest( 'http://laxarjs.org/A/B/test.md', 200, mdText )();
+
+               axMocks.widget.load( function( err ) {
+                  if( err ) {
+                     return done( err );
+                  }
+
+                  flushRequests() ;
+
+                  expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="http://my.example.org/docs/images/image1.png"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="//my.example.org/docs/images/image2.png"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="file:///docs/images/image3.png"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="http://laxarjs.org/docs/images/image4.png"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="http://laxarjs.org/A/B/docs/images/image5.png"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="http://laxarjs.org/A/B/docs/images/image6.png"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<img[^>]*\\s+src="http://laxarjs.org/A/docs/images/image7.png"[^>]*>|<img[^>]*\\s+src="http://laxarjs.org/A/B/../docs/images/image7.png"[^>]*>' );
+
+                  done()
+               } );
             } );
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
 
-            it( 'resolves hyperlinks with relative paths (R1.8)', function() {
+            it( 'resolves hyperlinks with relative paths (R1.8)', function( done ) {
                var mdText = '';
                mdText += '[Link 1](http://my.example.org/docs/pages/link1.html)';
                mdText += '[Link 2](//my.example.org/docs/pages/link2.html)';
@@ -194,40 +256,60 @@ define( [
                mdText += '[Link 6](./docs/pages/link6.html)';
                mdText += '[Link 7](../docs/pages/link7.html)';
                mdText += '[Link 8](../docs/pages/link8.html#chapter)';
-               $httpBackend.expectGET( 'http://laxarjs.org/A/B/test.md' ).respond( 200, mdText );
 
-               $httpBackend.flush();
-               expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://my.example.org/docs/pages/link1.html"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="//my.example.org/docs/pages/link2.html"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="file:///docs/pages/link3.html"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://laxarjs.org/docs/pages/link4.html"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://laxarjs.org/A/B/docs/pages/link5.html"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://laxarjs.org/A/B/docs/pages/link6.html"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://laxarjs.org/A/docs/pages/link7.html"[^>]*>|<a[^>]*\\s+href="http://laxarjs.org/A/B/../docs/pages/link7.html"[^>]*>' );
-               expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://laxarjs.org/A/docs/pages/link8.html#chapter"[^>]*>|<a[^>]*\\s+href="http://laxarjs.org/A/B/../docs/pages/link8.html#chapter"[^>]*>' );
+               expectRequest( 'http://laxarjs.org/A/B/test.md', 200, mdText )();
+
+               axMocks.widget.load( function( err ) {
+                  if( err ) {
+                     return done( err );
+                  }
+
+                  flushRequests() ;
+
+                  expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://my.example.org/docs/pages/link1.html"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="//my.example.org/docs/pages/link2.html"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="file:///docs/pages/link3.html"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://laxarjs.org/docs/pages/link4.html"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://laxarjs.org/A/B/docs/pages/link5.html"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://laxarjs.org/A/B/docs/pages/link6.html"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://laxarjs.org/A/docs/pages/link7.html"[^>]*>|<a[^>]*\\s+href="http://laxarjs.org/A/B/../docs/pages/link7.html"[^>]*>' );
+                  expect( widgetScope.model.html ).toMatch( '<a[^>]*\\s+href="http://laxarjs.org/A/docs/pages/link8.html#chapter"[^>]*>|<a[^>]*\\s+href="http://laxarjs.org/A/B/../docs/pages/link8.html#chapter"[^>]*>' );
+
+                  done();
+               } );
             } );
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
 
-            it( 'resolves links to anchors of headings (R1.9)', function() {
+            it( 'resolves links to anchors of headings (R1.9)', function( done ) {
                var mdText = '';
                mdText += '# Heading\n';
                mdText += '## Second Heading\n';
                mdText += '### Dritte Überschrift: Straße\n';
                mdText += '[Second Heading](#second-heading)\n';
-               $httpBackend.expectGET( 'http://laxarjs.org/A/B/test.md' ).respond( 200, mdText );
 
-               $httpBackend.flush();
-               expect( widgetScope.model.html )
-                  .toMatch( '<h1[^>]*\\s+id="' + widgetScope.id( 'heading' ) + '"[^>]*>' );
-               expect( widgetScope.model.html )
-                  .toMatch( '<h2[^>]*\\s+id="' + widgetScope.id( 'second-heading' ) + '"[^>]*>' );
-               expect( widgetScope.model.html )
-                  .toMatch( '<h3[^>]*\\s+id="' + widgetScope.id( 'dritte-berschrift-stra-e' ) + '"[^>]*>' );
+               expectRequest( 'http://laxarjs.org/A/B/test.md', 200, mdText )();
 
-               var linkUrl = 'http://localhost:8000/index.html#/widgetBrowser/' + widgetScope.id( 'second-heading' );
-               expect( widgetScope.model.html )
-                  .toMatch( '<a[^>]*\\s+href="' + linkUrl + '"[^>]*>Second Heading</a>' );
+               axMocks.widget.load( function( err ) {
+                  if( err ) {
+                     return done( err );
+                  }
+
+                  flushRequests();
+
+                  expect( widgetScope.model.html )
+                     .toMatch( '<h1[^>]*\\s+id="' + widgetScope.id( 'heading' ) + '"[^>]*>' );
+                  expect( widgetScope.model.html )
+                     .toMatch( '<h2[^>]*\\s+id="' + widgetScope.id( 'second-heading' ) + '"[^>]*>' );
+                  expect( widgetScope.model.html )
+                     .toMatch( '<h3[^>]*\\s+id="' + widgetScope.id( 'dritte-berschrift-stra-e' ) + '"[^>]*>' );
+
+                  var linkUrl = 'http://localhost:8000/index.html#/widgetBrowser/' + widgetScope.id( 'second-heading' );
+                  expect( widgetScope.model.html )
+                     .toMatch( '<a[^>]*\\s+href="' + linkUrl + '"[^>]*>Second Heading</a>' );
+
+                  done();
+               } );
             } );
          } );
       } );
@@ -243,6 +325,10 @@ define( [
                attribute: 'markdown'
             }
          } );
+
+         beforeEach( axMocks.widget.load );
+
+         afterEach( axMocks.tearDown );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -269,7 +355,7 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).toHaveBeenCalled();
+            expect( log.warn ).toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -283,13 +369,13 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).toHaveBeenCalled();
+            expect( log.warn ).toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
          it( 'does not log a warning before the resource is received', function() {
-            expect( ax.log.warn ).not.toHaveBeenCalled();
+            expect( log.warn ).not.toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -349,6 +435,10 @@ define( [
             }
          } );
 
+         beforeEach( axMocks.widget.load );
+
+         afterEach( axMocks.tearDown );
+
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
          it( 'uses a markdown resource and is listening to didReplace event (R1.4)', function() {
@@ -372,7 +462,7 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).toHaveBeenCalled();
+            expect( log.warn ).toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -384,13 +474,14 @@ define( [
             } );
 
             testEventBus.flush();
-            expect( ax.log.warn ).not.toHaveBeenCalled();
+            expect( log.warn ).not.toHaveBeenCalled();
          } );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 
          it( 'converts the markdown file content to HTML (R1.6)', function() {
-            $httpBackend.expectGET( 'test.md' ).respond( '*Emphasized*' );
+            expectRequest( 'test.md', 200, '*Emphasized*' )();
+
             testEventBus.publish( 'didReplace.markdownResource', {
                resource: 'markdownResource',
                data: {
@@ -402,7 +493,8 @@ define( [
                }
             } );
             testEventBus.flush();
-            $httpBackend.flush();
+            flushRequests();
+
             expect( widgetScope.model.html ).toMatch( /<em>Emphasized<\/em>/ );
          } );
 
@@ -418,7 +510,7 @@ define( [
             mdText += '![Image 5](docs/images/image5.png)';
             mdText += '![Image 6](./docs/images/image6.png)';
             mdText += '![Image 7](../docs/images/image7.png)';
-            $httpBackend.expectGET( url ).respond( mdText );
+            expectRequest( url, 200, mdText )();
             testEventBus.publish( 'didReplace.markdownResource', {
                resource: 'markdownResource',
                data: {
@@ -430,7 +522,7 @@ define( [
                }
             } );
             testEventBus.flush();
-            $httpBackend.flush();
+            flushRequests();
 
             expect( widgetScope.model.html )
                .toMatch( '<img[^>]*\\s+src="http://my.example.org/docs/images/image1.png"[^>]*>' );
@@ -461,7 +553,7 @@ define( [
             mdText += '[Link 6](./docs/pages/link6.html)';
             mdText += '[Link 7](../docs/pages/link7.html)';
             mdText += '[Link 8](../docs/pages/link8.html#chapter)';
-            $httpBackend.expectGET( url ).respond( mdText );
+            expectRequest( url, 200, mdText )();
             testEventBus.publish( 'didReplace.markdownResource', {
                resource: 'markdownResource',
                data: {
@@ -473,7 +565,7 @@ define( [
                }
             } );
             testEventBus.flush();
-            $httpBackend.flush();
+            flushRequests();
 
             expect( widgetScope.model.html )
                .toMatch( '<a[^>]*\\s+href="http://my.example.org/docs/pages/link1.html"[^>]*>' );
@@ -502,7 +594,7 @@ define( [
             mdText += '## Second Heading\n';
             mdText += '### Dritte Überschrift: Straße\n';
             mdText += '[Second Heading](#second-heading)\n';
-            $httpBackend.expectGET( url ).respond( mdText );
+            expectRequest( url, 200, mdText )();
             testEventBus.publish( 'didReplace.markdownResource', {
                resource: 'markdownResource',
                data: {
@@ -514,7 +606,7 @@ define( [
                }
             } );
             testEventBus.flush();
-            $httpBackend.flush();
+            flushRequests();
 
             expect( widgetScope.model.html )
                .toMatch( '<h1[^>]*\\s+id="' + widgetScope.id( 'heading' ) + '"[^>]*>' );
@@ -543,10 +635,13 @@ define( [
             }
          } );
 
-         beforeEach( function() {
-            $httpBackend.expectGET( 'test.md' ).respond( '*Emphasized*' );
-            $httpBackend.flush();
-         } );
+         beforeEach( expectRequest( 'test.md', 200, '*Emphasized*' ) );
+
+         beforeEach( axMocks.widget.load );
+
+         beforeEach( flushRequests );
+
+         afterEach( axMocks.tearDown );
 
          /////////////////////////////////////////////////////////////////////////////////////////////////////
 

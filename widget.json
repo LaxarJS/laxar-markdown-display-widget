@@ -1,5 +1,5 @@
 {
-   "name": "ax-markdown-display-widget",
+   "name": "laxar-markdown-display-widget",
    "description": "Obtains Markdown-formatted text or a reference to it from a resource and displays it as HTML.",
 
    "integration": {

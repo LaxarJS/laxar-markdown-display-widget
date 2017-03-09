@@ -8,8 +8,8 @@ define( [
    'jquery',
    'laxar',
    'laxar-patterns',
-   'marked/lib/marked',
-   'URIjs/src/URI'
+   'marked',
+   'urijs'
 ], function( ng, $, ax, patterns, marked, URI ) {
    'use strict';
 
@@ -20,9 +20,9 @@ define( [
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-   Controller.$inject = ['$scope', '$http', '$sce', 'axFlowService' ];
+   Controller.$inject = ['$scope', '$http', '$sce', 'axFlowService', 'axLog' ];
 
-   function Controller( $scope, $http, $sce, flowService ) {
+   function Controller( $scope, $http, $sce, flowService, log ) {
       var publishError = patterns.errors.errorPublisherForFeature( $scope, 'messages', {
          localizer: patterns.i18n.handlerFor( $scope ).scopeLocaleFromFeature( 'i18n' ).localizer()
       } );
@@ -81,7 +81,7 @@ define( [
                   $scope.model.html =  markdownToHtml( markdown );
                }
                else {
-                  ax.log.warn( 'No markdown content available' );
+                  log.warn( 'No markdown content available' );
                }
             }
             else {
@@ -90,7 +90,7 @@ define( [
                   loadMarkdownFromUrl( location );
                }
                else {
-                  ax.log.warn( 'No content URL available' );
+                  log.warn( 'No content URL available' );
                }
             }
          }
@@ -103,16 +103,16 @@ define( [
 
       function loadMarkdownFromUrl( location ) {
          $http.get( location )
-            .success( function( data ) {
+            .then( function( response ) {
+               var data = response.data;
                $scope.model.html =  markdownToHtml( data );
-            } )
-            .error( function( data, status, headers ) {
+            }, function( response ) {
                publishError( 'HTTP_GET', 'i18nFailedLoadingResource', {
                   url: location
                }, {
-                  data: data,
-                  status: status,
-                  headers: headers
+                  data: response.data,
+                  status: response.status,
+                  headers: response.headers
                } );
             } );
       }
