@@ -1,212 +1,204 @@
 /**
- * Copyright 2015 aixigo AG
+ * Copyright 2017 aixigo AG
  * Released under the MIT license.
  * http://laxarjs.org/license
  */
-define( [
-   'angular',
-   'jquery',
-   'laxar',
-   'laxar-patterns',
-   'marked',
-   'urijs'
-], function( ng, $, ax, patterns, marked, URI ) {
-   'use strict';
 
-   var moduleName = 'axMarkdownDisplayWidget';
-   var module = ng.module( moduleName, [] );
+import * as ng from 'angular';
+import * as $ from 'jquery';
+import * as ax from 'laxar';
+import * as patterns from 'laxar-patterns';
+import * as marked from 'marked';
+import * as URI from 'urijs';
 
-   var MARKDOWN_DISPLAY_SCROLL = 'markdownDisplayScroll';
+const MARKDOWN_DISPLAY_SCROLL = 'markdownDisplayScroll';
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-   Controller.$inject = ['$scope', '$http', '$sce', 'axFlowService', 'axLog' ];
+Controller.$inject = [ '$scope', '$http', '$sce', 'axFlowService', 'axLog' ];
 
-   function Controller( $scope, $http, $sce, flowService, log ) {
-      var publishError = patterns.errors.errorPublisherForFeature( $scope, 'messages', {
-         localizer: patterns.i18n.handlerFor( $scope ).scopeLocaleFromFeature( 'i18n' ).localizer()
-      } );
-      var defaultRenderer = new marked.Renderer();
-      var renderer = new marked.Renderer();
-      renderer.image = renderImage;
-      renderer.link = renderLink;
+function Controller( $scope, $http, $sce, flowService, log ) {
+   const publishError = patterns.errors.errorPublisherForFeature( $scope, 'messages', {
+      localizer: patterns.i18n.handlerFor( $scope ).registerLocaleFromFeature( 'i18n' ).localizer()
+   } );
+   const defaultRenderer = new marked.Renderer();
+   const renderer = new marked.Renderer();
+   renderer.image = renderImage;
+   renderer.link = renderLink;
 
-      $scope.eventBus.subscribe( 'didNavigate.' + '_self', function( event ) {
-         var path = 'data.' + $scope.features.markdown.parameter;
-         $scope.model.anchor = ax.object.path( event, path, '' );
+   $scope.eventBus.subscribe( 'didNavigate._self', event => {
+      const path = `data.${$scope.features.markdown.parameter}`;
+      $scope.model.anchor = ax.object.path( event, path, '' );
+      $scope.$emit( MARKDOWN_DISPLAY_SCROLL );
+   } );
+
+   $scope.model = {
+      html: ''
+   };
+
+   $scope.resources = {};
+
+   loadMarkdown();
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   if( $scope.features.markdown.resource ) {
+      patterns.resources.handlerFor( $scope )
+         .registerResourceFromFeature( 'markdown', {
+            onUpdateReplace: loadMarkdown
+         } );
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   $scope.navigate = function( id ) {
+      if( id !== $scope.model.anchor ) {
+         $scope.eventBus.publish( 'navigateRequest._self', {
+            target: '_self',
+            data: {
+               anchor: id
+            }
+         } );
+      }
+      else {
          $scope.$emit( MARKDOWN_DISPLAY_SCROLL );
-      } );
-
-      $scope.model = {
-         html: ''
-      };
-
-      $scope.resources = {};
-
-      loadMarkdown();
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      if( $scope.features.markdown.resource ) {
-         patterns.resources.handlerFor( $scope )
-            .registerResourceFromFeature( 'markdown', {
-               onUpdateReplace: loadMarkdown
-            } );
       }
+   };
 
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      $scope.navigate = function( id ) {
-         if( id !== $scope.model.anchor ) {
-            $scope.eventBus.publish( 'navigateRequest._self', {
-               target: '_self',
-               data: {
-                  anchor: id
-               }
-            } );
-         }
-         else {
-            $scope.$emit( MARKDOWN_DISPLAY_SCROLL );
-         }
-      };
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      function loadMarkdown() {
-         $scope.model.html = '';
-         if( $scope.resources.markdown ) {
-            if( $scope.features.markdown.attribute ) {
-               var markdown = ax.object.path( $scope.resources.markdown, $scope.features.markdown.attribute );
-               if( typeof( markdown ) === 'string' ) {
-                  $scope.model.html =  markdownToHtml( markdown );
-               }
-               else {
-                  log.warn( 'No markdown content available' );
-               }
+   function loadMarkdown() {
+      $scope.model.html = '';
+      if( $scope.resources.markdown ) {
+         if( $scope.features.markdown.attribute ) {
+            const markdown = ax.object.path( $scope.resources.markdown, $scope.features.markdown.attribute );
+            if( typeof ( markdown ) === 'string' ) {
+               $scope.model.html = markdownToHtml( markdown );
             }
             else {
-               var location =  ax.object.path( $scope.resources.markdown, '_links.markdown.href', null );
-               if( location ) {
-                  loadMarkdownFromUrl( location );
-               }
-               else {
-                  log.warn( 'No content URL available' );
-               }
+               log.warn( 'No markdown content available' );
             }
          }
-         else if( $scope.features.markdown.url ) {
-            loadMarkdownFromUrl( $scope.features.markdown.url );
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      function loadMarkdownFromUrl( location ) {
-         $http.get( location )
-            .then( function( response ) {
-               var data = response.data;
-               $scope.model.html =  markdownToHtml( data );
-            }, function( response ) {
-               publishError( 'HTTP_GET', 'i18nFailedLoadingResource', {
-                  url: location
-               }, {
-                  data: response.data,
-                  status: response.status,
-                  headers: response.headers
-               } );
-            } );
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      function markdownToHtml( mdText ) {
-         return $sce.trustAsHtml( marked( mdText, {
-            renderer: renderer,
-            sanitize: true,
-            headerPrefix: $scope.id( '' )
-         } ) );
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      function renderImage( href, title, text ) {
-         var uri = new URI( href );
-         if( uri.is( 'absolute' ) || uri.scheme() !== '' ) {
-            return defaultRenderer.image( href, title, text );
-         }
          else {
-            var markdownSourceUrl = markdownUrl();
-            if( !markdownSourceUrl ) {
-               return defaultRenderer.image( uri.unicode(), title, text );
-            }
-            return defaultRenderer.image( uri.unicode().absoluteTo( markdownSourceUrl ), title, text );
-         }
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      function renderLink( href, title, text ) {
-         var uri = new URI( href );
-         if( uri.is( 'absolute' ) || uri.scheme() !== '' ) {
-            return defaultRenderer.link( href, title, text );
-         }
-         else {
-            if( href.charAt( 0 ) === '#' && uri.fragment() !== '' ) {
-               var placeParameters = {};
-               placeParameters[ $scope.features.markdown.parameter ] = $scope.id( uri.fragment() );
-               var anchorHref = flowService.constructAbsoluteUrl( '_self', placeParameters );
-               return '<a href="' + anchorHref + '">' + text + '</a>';
+            const location = ax.object.path( $scope.resources.markdown, '_links.markdown.href', null );
+            if( location ) {
+               loadMarkdownFromUrl( location );
             }
             else {
-               var markdownSourceUrl = markdownUrl();
-               if( !markdownSourceUrl ) {
-                  return defaultRenderer.link( uri.unicode(), title, text );
-               }
-               return defaultRenderer.link( uri.unicode().absoluteTo( markdownSourceUrl ), title, text );
+               log.warn( 'No content URL available' );
             }
          }
       }
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      function markdownUrl(){
-         return ax.object.path( $scope.resources.markdown, '_links.markdown.href', $scope.features.markdown.url );
+      else if( $scope.features.markdown.url ) {
+         loadMarkdownFromUrl( $scope.features.markdown.url );
       }
    }
 
-   module.controller( 'AxMarkdownDisplayWidgetController', Controller );
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+   function loadMarkdownFromUrl( location ) {
+      $http.get( location )
+         .then( response => {
+            const data = response.data;
+            $scope.model.html = markdownToHtml( data );
+         }, response => {
+            publishError( 'HTTP_GET', 'i18nFailedLoadingResource', {
+               url: location
+            }, {
+               data: response.data,
+               status: response.status,
+               headers: response.headers
+            } );
+         } );
+   }
 
-   module.directive( 'axMarkdownDisplayHtml', [ '$compile', '$sce', function( $compile, $sce ) {
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   function markdownToHtml( mdText ) {
+      return $sce.trustAsHtml( marked( mdText, {
+         renderer,
+         sanitize: true,
+         headerPrefix: $scope.id( '' )
+      } ) );
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   function renderImage( href, title, text ) {
+      const uri = new URI( href );
+      if( uri.is( 'absolute' ) || uri.scheme() !== '' ) {
+         return defaultRenderer.image( href, title, text );
+      }
+
+      const markdownSourceUrl = markdownUrl();
+      if( !markdownSourceUrl ) {
+         return defaultRenderer.image( uri.unicode(), title, text );
+      }
+      return defaultRenderer.image( uri.unicode().absoluteTo( markdownSourceUrl ), title, text );
+
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   function renderLink( href, title, text ) {
+      const uri = new URI( href );
+      if( uri.is( 'absolute' ) || uri.scheme() !== '' ) {
+         return defaultRenderer.link( href, title, text );
+      }
+
+      if( href.charAt( 0 ) === '#' && uri.fragment() !== '' ) {
+         const placeParameters = {};
+         placeParameters[ $scope.features.markdown.parameter ] = $scope.id( uri.fragment() );
+         const anchorHref = flowService.constructAbsoluteUrl( '_self', placeParameters );
+         return `<a href="${anchorHref}">${text}</a>`;
+      }
+
+      const markdownSourceUrl = markdownUrl();
+      if( !markdownSourceUrl ) {
+         return defaultRenderer.link( uri.unicode(), title, text );
+      }
+      return defaultRenderer.link( uri.unicode().absoluteTo( markdownSourceUrl ), title, text );
+
+
+   }
+
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   function markdownUrl(){
+      return ax.object.path(
+         $scope.resources.markdown, '_links.markdown.href', $scope.features.markdown.url );
+   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const name = ng.module( 'axMarkdownDisplayWidget', [] )
+   .controller( 'AxMarkdownDisplayWidgetController', Controller )
+   .directive( 'axMarkdownDisplayHtml', [ '$compile', '$sce', function( $compile, $sce ) {
       return {
          restrict: 'A',
          replace: true,
-         link: function( scope, element, attrs ) {
+         link( scope, element, attrs ) {
 
-            scope.$watch( attrs.axMarkdownDisplayHtml, function( html ) {
+            scope.$watch( attrs.axMarkdownDisplayHtml, html => {
                element.html( $sce.getTrustedHtml( html ) );
                $compile( element.contents() )( scope );
                scrollToAnchor( scope.model.anchor );
             } );
-            scope.$on( MARKDOWN_DISPLAY_SCROLL, function() {
+            scope.$on( MARKDOWN_DISPLAY_SCROLL, () => {
                scrollToAnchor( scope.model.anchor );
             } );
-            scope.$watch( 'model.anchor', function( id ) {
+            scope.$watch( 'model.anchor', id => {
                scrollToAnchor( id );
             } );
 
             function scrollToAnchor( id ) {
                if( !id ) { return; }
-               var offset = $( '#' + id ).offset();
+               const offset = $( `#${id}` ).offset();
                if( offset ) {
                   window.scrollTo( offset.left, offset.top );
                }
             }
          }
       };
-   } ] );
-
-   return module;
-
-} );
+   } ] ).name;
