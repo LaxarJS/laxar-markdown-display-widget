@@ -17,9 +17,12 @@
   "main": "laxar-markdown-display-widget.js",
   "browser": "dist/laxar-markdown-display-widget.js",
   "scripts": {
-    "prepublish": "webpack -p",
-    "start": "webpack-dev-server",
-    "test": "karma start"
+    "prepublish": "npm run dist",
+    "test": "npm run karma && npm run eslint",
+    "dist": "webpack -p",
+    "start": "webpack && webpack-dev-server --inline",
+    "karma": "karma start karma.config.js",
+    "eslint": "eslint *.js spec"
   },
   "dependencies": {
     "angular": "^1.5.7",
