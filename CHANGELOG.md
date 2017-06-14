@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v3.0.0-alpha.1
+
 - [#19](https://github.com/LaxarJS/ax-markdown-display-widget/issues/19): updated dependencies and transformed code to es2015
 
 
