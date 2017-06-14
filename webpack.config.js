@@ -5,23 +5,32 @@
  */
 /* eslint-env node */
 
+const pkg = require( './package.json' );
+const path = require( 'path' );
+
 const webpack = require( 'laxar-infrastructure' ).webpack( {
    context: __dirname,
-   rules: [
-      {
-         test: /\.js$/,
-         exclude: 'node_modules',
-         loader: 'babel-loader'
-      },
-      {
-         test: /\.spec\.js$/,
-         exclude: 'node_modules',
-         loader: 'laxar-mocks/spec-loader'
-      }
-   ]
+   module: {
+      rules: [
+         {
+            test: /\.js$/,
+            exclude: [
+               path.resolve( __dirname, 'node_modules' )
+            ],
+            loader: 'babel-loader'
+         },
+         {
+            test: /\.spec\.js$/,
+            exclude: [
+               path.resolve( __dirname, 'node_modules' )
+            ],
+            loader: 'laxar-mocks/spec-loader'
+         }
+      ]
+   }
 } );
 
 module.exports = [
    webpack.library(),
-   webpack.browserSpec( [ 'spec/laxar-markdown-display-widget.spec.js' ] )
+   webpack.browserSpec( [ `./spec/${pkg.name}.spec.js` ] )
 ];

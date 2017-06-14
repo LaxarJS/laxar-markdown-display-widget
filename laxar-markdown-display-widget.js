@@ -24,7 +24,7 @@ define( [
 
    function Controller( $scope, $http, $sce, flowService, log ) {
       var publishError = patterns.errors.errorPublisherForFeature( $scope, 'messages', {
-         localizer: patterns.i18n.handlerFor( $scope ).scopeLocaleFromFeature( 'i18n' ).localizer()
+         localizer: patterns.i18n.handlerFor( $scope ).registerLocaleFromFeature( 'i18n' ).localizer()
       } );
       var defaultRenderer = new marked.Renderer();
       var renderer = new marked.Renderer();

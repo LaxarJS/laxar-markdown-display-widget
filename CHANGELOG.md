@@ -3,6 +3,9 @@
 ## Last Changes
 
 
+- [#19](https://github.com/LaxarJS/ax-markdown-display-widget/issues/19): updated dependencies
+
+
 ## v3.0.0-alpha.0
 
 - [#18](https://github.com/LaxarJS/ax-markdown-display-widget/issues/18): update to webpack, LaxarJS 2, Angular 1.6 and Jasmine 2
