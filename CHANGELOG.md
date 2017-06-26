@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#20](https://github.com/LaxarJS/ax-markdown-display-widget/issues/20): renamed HTML template and CSS files
+
 
 ## v3.0.0-alpha.1
 
