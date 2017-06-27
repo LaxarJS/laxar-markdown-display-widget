@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v3.0.0-alpha.2
+
 - [#21](https://github.com/LaxarJS/laxar-markdown-display-widget/issues/21): renamed repository to match artifact
 - [#20](https://github.com/LaxarJS/laxar-markdown-display-widget/issues/20): renamed HTML template and CSS files
 
