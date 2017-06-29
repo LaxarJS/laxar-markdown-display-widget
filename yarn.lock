@@ -257,7 +257,7 @@ async@1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/async/-/async-1.4.0.tgz#35f86f83c59e0421d099cd9a91d8278fb578c00d"
 
-async@2.0.1, async@^2.0.0:
+async@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/async/-/async-2.0.1.tgz#b709cc0280a9c36f09f4536be823c838a9049e25"
   dependencies:
@@ -267,7 +267,7 @@ async@^1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
-async@^2.1.2:
+async@^2.0.0, async@^2.1.2:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/async/-/async-2.1.5.tgz#e587c68580994ac67fc56ff86d3ac56bdbe810bc"
   dependencies:
@@ -2737,17 +2737,9 @@ laxar-patterns@^2.0.0:
     fast-json-patch "~0.5.2"
     laxar "^2.0.0"
 
-laxar-tooling@^2.0.0:
+laxar-tooling@^2.0.0, laxar-tooling@^2.0.0-rc.2:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/laxar-tooling/-/laxar-tooling-2.0.0.tgz#5da66e07f07ea8e998889692fac4bec5b2d724b2"
-  dependencies:
-    ajv "^4.11.5"
-    jsonlint "^1.6.2"
-    source-map-support "^0.4.2"
-
-laxar-tooling@^2.0.0-rc.2:
-  version "2.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/laxar-tooling/-/laxar-tooling-2.0.0-rc.2.tgz#cb30da1d51c9e17d88bfacbdff29007a49092d7a"
   dependencies:
     ajv "^4.11.5"
     jsonlint "^1.6.2"
@@ -4392,16 +4384,7 @@ wd@^1.0.0:
     underscore.string "3.3.4"
     vargs "0.1.0"
 
-webpack-dev-middleware@^1.0.11:
-  version "1.10.1"
-  resolved "https://registry.yarnpkg.com/webpack-dev-middleware/-/webpack-dev-middleware-1.10.1.tgz#c6b4cf428139cf1aefbe06a0c00fdb4f8da2f893"
-  dependencies:
-    memory-fs "~0.4.1"
-    mime "^1.3.4"
-    path-is-absolute "^1.0.0"
-    range-parser "^1.0.3"
-
-webpack-dev-middleware@^1.10.2:
+webpack-dev-middleware@^1.0.11, webpack-dev-middleware@^1.10.2:
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/webpack-dev-middleware/-/webpack-dev-middleware-1.11.0.tgz#09691d0973a30ad1f82ac73a12e2087f0a4754f9"
   dependencies:

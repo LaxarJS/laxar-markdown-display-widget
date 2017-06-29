@@ -6,8 +6,8 @@
 
 import * as ng from 'angular';
 import * as $ from 'jquery';
-import * as ax from 'laxar';
-import * as patterns from 'laxar-patterns';
+import { object } from 'laxar';
+import { errors, i18n, resources } from 'laxar-patterns';
 import * as marked from 'marked';
 import * as URI from 'urijs';
 
@@ -18,17 +18,26 @@ const MARKDOWN_DISPLAY_SCROLL = 'markdownDisplayScroll';
 Controller.$inject = [ '$scope', '$http', '$sce', 'axFlowService', 'axLog' ];
 
 function Controller( $scope, $http, $sce, flowService, log ) {
-   const publishError = patterns.errors.errorPublisherForFeature( $scope, 'messages', {
-      localizer: patterns.i18n.handlerFor( $scope ).registerLocaleFromFeature( 'i18n' ).localizer()
+   let lastNavigateData = {};
+
+   const publishError = errors.errorPublisherForFeature( $scope, 'messages', {
+      localizer: i18n.handlerFor( $scope ).registerLocaleFromFeature( 'i18n' ).localizer()
    } );
    const defaultRenderer = new marked.Renderer();
    const renderer = new marked.Renderer();
    renderer.image = renderImage;
    renderer.link = renderLink;
 
-   $scope.eventBus.subscribe( 'didNavigate._self', event => {
-      const path = `data.${$scope.features.markdown.parameter}`;
-      $scope.model.anchor = ax.object.path( event, path, '' );
+   $scope.eventBus.subscribe( 'didNavigate', event => {
+      const { data = {} } = event;
+      const linksChanged = Object.keys( data )
+         .filter( key => key !== $scope.features.markdown.parameter )
+         .some( key => lastNavigateData[ key ] !== data[ key ] );
+      lastNavigateData = object.deepClone( data );
+      $scope.model.anchor = lastNavigateData[ $scope.features.markdown.parameter ];
+      if( linksChanged ) {
+         loadMarkdown();
+      }
       $scope.$emit( MARKDOWN_DISPLAY_SCROLL );
    } );
 
@@ -43,7 +52,7 @@ function Controller( $scope, $http, $sce, flowService, log ) {
    ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    if( $scope.features.markdown.resource ) {
-      patterns.resources.handlerFor( $scope )
+      resources.handlerFor( $scope )
          .registerResourceFromFeature( 'markdown', {
             onUpdateReplace: loadMarkdown
          } );
@@ -71,7 +80,7 @@ function Controller( $scope, $http, $sce, flowService, log ) {
       $scope.model.html = '';
       if( $scope.resources.markdown ) {
          if( $scope.features.markdown.attribute ) {
-            const markdown = ax.object.path( $scope.resources.markdown, $scope.features.markdown.attribute );
+            const markdown = object.path( $scope.resources.markdown, $scope.features.markdown.attribute );
             if( typeof ( markdown ) === 'string' ) {
                $scope.model.html = markdownToHtml( markdown );
             }
@@ -80,7 +89,7 @@ function Controller( $scope, $http, $sce, flowService, log ) {
             }
          }
          else {
-            const location = ax.object.path( $scope.resources.markdown, '_links.markdown.href', null );
+            const location = object.path( $scope.resources.markdown, '_links.markdown.href', null );
             if( location ) {
                loadMarkdownFromUrl( location );
             }
@@ -147,7 +156,7 @@ function Controller( $scope, $http, $sce, flowService, log ) {
       }
 
       if( href.charAt( 0 ) === '#' && uri.fragment() !== '' ) {
-         const placeParameters = {};
+         const placeParameters = object.deepClone( lastNavigateData );
          placeParameters[ $scope.features.markdown.parameter ] = $scope.id( uri.fragment() );
          const anchorHref = flowService.constructAbsoluteUrl( '_self', placeParameters );
          return `<a href="${anchorHref}">${text}</a>`;
@@ -158,15 +167,16 @@ function Controller( $scope, $http, $sce, flowService, log ) {
          return defaultRenderer.link( uri.unicode(), title, text );
       }
       return defaultRenderer.link( uri.unicode().absoluteTo( markdownSourceUrl ), title, text );
-
-
    }
 
    ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    function markdownUrl(){
-      return ax.object.path(
-         $scope.resources.markdown, '_links.markdown.href', $scope.features.markdown.url );
+      return object.path(
+         $scope.resources.markdown,
+         '_links.markdown.href',
+         $scope.features.markdown.url
+      );
    }
 }
 
