@@ -3,6 +3,7 @@
 ## Last Changes
 
 
+## v3.0.0
 ## v3.0.0-rc.0
 ## v3.0.0-alpha.2
 
