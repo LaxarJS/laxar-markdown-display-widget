@@ -2,6 +2,9 @@
 
 ## Last Changes
 
+
+## v3.0.1
+
 - [#22](https://github.com/LaxarJS/laxar-markdown-display-widget/issues/22): fixed fragment link generation
 
 
