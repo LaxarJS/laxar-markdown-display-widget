@@ -2,6 +2,8 @@
 
 ## Last Changes
 
+- [#24](https://github.com/LaxarJS/laxar-markdown-display-widget/issues/24): fixed rendering next to last source
+
 
 ## v3.0.1
 

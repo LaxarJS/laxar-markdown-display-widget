@@ -19,6 +19,7 @@ Controller.$inject = [ '$scope', '$http', '$sce', 'axFlowService', 'axLog' ];
 
 function Controller( $scope, $http, $sce, flowService, log ) {
    let lastNavigateData = {};
+   let lastResource;
 
    const publishError = errors.errorPublisherForFeature( $scope, 'messages', {
       localizer: i18n.handlerFor( $scope ).registerLocaleFromFeature( 'i18n' ).localizer()
@@ -106,8 +107,10 @@ function Controller( $scope, $http, $sce, flowService, log ) {
    ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    function loadMarkdownFromUrl( location ) {
+      lastResource = location;
       $http.get( location )
          .then( response => {
+            if( lastResource !== location ) { return; }
             const data = response.data;
             $scope.model.html = markdownToHtml( data );
          }, response => {
