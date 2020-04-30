@@ -27,7 +27,7 @@
   "dependencies": {
     "angular": "^1.5.7",
     "bootstrap": "^3.3.7",
-    "jquery": "^3.1.1",
+    "jquery": "^3.5.0",
     "laxar": "^2.0.0",
     "laxar-patterns": "^2.0.0",
     "laxar-uikit": "^2.0.0",
@@ -47,7 +47,7 @@
     "eslint-config-laxarjs": "^2.0.0",
     "imports-loader": "^0.7.1",
     "jasmine-core": "~2.5.2",
-    "jquery": "^3.1.1",
+    "jquery": "^3.5.0",
     "karma": "^1.5.0",
     "laxar-angular-adapter": "^2.0.0",
     "laxar-infrastructure": "^2.0.0",
