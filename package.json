@@ -32,7 +32,7 @@
     "laxar-patterns": "^2.0.0",
     "laxar-uikit": "^2.0.0",
     "marked": "^0.3.6",
-    "urijs": "^1.18.9"
+    "urijs": "^1.19.8"
   },
   "devDependencies": {
     "angular": "^1.5.7",
